@@ -14,7 +14,7 @@ class Post extends Model
     
     public function author()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function comments()
@@ -25,5 +25,15 @@ class Post extends Model
     public function likes()
     {
         return $this->morphMany(Like::class, 'likeable');
+    }
+
+    public function getPostPhotoAttribute($value)
+    {
+        if($value){
+            return asset('storage/' .$value);
+        }
+        else {
+            return null;
+        }
     }
 }

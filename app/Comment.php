@@ -4,6 +4,8 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\User;
+
 class Comment extends Model
 {
    protected $fillable = [
@@ -21,4 +23,11 @@ class Comment extends Model
     {
         return $this->morphMany(Like::class, 'likeable');
     }
+
+   public function author()
+   {
+       return $this->belongsTo(User::class, 'user_id');
+   }
+
+
 }

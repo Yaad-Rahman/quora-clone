@@ -6,8 +6,7 @@
            @include('components._leftSidebar')
         </div>
         <div class="lg:flex-1 lg:mx-10">
-            @include('components._postPanel')
-            @include('components._posts')
+            @livewire('timeline')
         </div>
        <div class="lg:w-1/6">
            @include('components._rightSidebar')
