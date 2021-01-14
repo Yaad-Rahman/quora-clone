@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCommentsTable extends Migration
+class CreateFollowsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,10 @@ class CreateCommentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('comments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('post_id')->constrained()->onDelete('cascade');
+        Schema::create('follows', function (Blueprint $table) {
+            $table->primary(['user_id', 'following_user_id']);
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->text('comment');
-            $table->integer('parent_id')->default(0);
+            $table->foreignId('following_user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ class CreateCommentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('comments');
+        Schema::dropIfExists('follows');
     }
 }

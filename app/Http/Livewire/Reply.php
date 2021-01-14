@@ -5,47 +5,61 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\Comment;
 use App\Like;
-use Illuminate\Database\Eloquent\Builder;
 
-class Comments extends Component
+class Reply extends Component
 {
-    public $comment;
-    public $postId;
+
     public $reply;
+    public $postId;
+    public $commentId;
+    public $replyAvailable;
 
-    protected $rules = [
-        'comment' => 'required|max:255',
-    ];
+    
 
-
-    public function commentReply($id)
+    public function replyOfReply($id)
     {
-        if($this->reply){
-            $this->reply = null;
-        }else{
-            $this->reply = $id;
+        if($this->replyAvailable)
+        {
+            $this->replyAvailable = null;
+        }else {
+            $this->replyAvailable = $id;
         }
     }
 
-    public function deleteComment($id)
+    public function deleteReply($id)
     {
-        Comment::where('parent_id', $id)->delete();
         Comment::destroy($id);
     }
 
-
-    public function postComment()
+    public function postReplyOfReply()
     {
-        $data = $this->validate();
+        $data = $this->validate([
+            'replyOfReply' => 'required|max:255'
+        ]);
         Comment::create([
             'post_id' => $this->postId,
             'user_id' => auth()->user()->id,
-            'comment' => $data['comment']
+            'parent_id' => $this->commentId, 
+            'comment' => $data['replyOfReply']
         ]);
-        $this->comment = '';
+        $this->replyOfReply = '';
     }
 
-    public function commentLike(Comment $comment)
+    public function postReply()
+    {
+        $data= $this->validate([
+            'reply' => 'required|max:255'
+        ]);
+        Comment::create([
+            'post_id' => $this->postId,
+            'user_id' => auth()->user()->id,
+            'parent_id' => $this->commentId, 
+            'comment' => $data['reply']
+        ]);
+        $this->reply = '';
+    }
+
+    public function replyLike(Comment $comment)
     {
         
         $my_like = $comment->likes->where('user_id', auth()->user()->id)->first();
@@ -75,7 +89,7 @@ class Comments extends Component
         
     }
 
-    public function commentDislike(Comment $comment)
+    public function replyDislike(Comment $comment)
     {
         $my_like = $comment->likes->where('user_id', auth()->user()->id)->first();
         $my_dislike =  $comment->dislikes->where('user_id', auth()->user()->id)->first();
@@ -104,12 +118,14 @@ class Comments extends Component
         
     }
 
+
+
     public function render()
-    {
-        $comments = Comment::where('post_id', $this->postId)->where('parent_id', 0)->get();
-        
-        return view('livewire.comments', [
-            'comments' => $comments,
+    {   
+        $replies = Comment::where('post_id', $this->postId)->where('parent_id', $this->commentId)->get();
+
+        return view('livewire.reply', [
+            'replies' => $replies,
         ]);
     }
 }

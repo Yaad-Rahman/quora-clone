@@ -24,7 +24,22 @@ class Post extends Model
 
     public function likes()
     {
-        return $this->morphMany(Like::class, 'likeable');
+        return $this->morphMany(Like::class, 'likeable')->where('liked', true);
+    }
+
+    public function dislikes()
+    {
+        return $this->morphMany(Like::class, 'likeable')->where('liked', false);
+    }
+
+    public function isLikedBy()
+    {
+        return (bool) $this->likes->where('user_id', auth()->user()->id)->count();
+    }
+
+    public function isDislikedBy()
+    {
+        return (bool) $this->dislikes->where('user_id', auth()->user()->id)->count();
     }
 
     public function getPostPhotoAttribute($value)

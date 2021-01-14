@@ -12,12 +12,15 @@
 
     <div class="flex justify-evenly border shadow py-5">
         <h4 class="text-2xl text-red-500">Quora</h4>
-        <h6>Home</h6>
+        <a href="{{route('home')}}">Home</a>
         <h6>Following</h6>
         <h6>Answer</h6>
         <h6>Notifications</h6>
         @livewire('search')
-        <h6>User Avatar</h6>
+        <a href="{{route('profile', auth()->user()->id)}}">
+            <img class="rounded-3xl w-8 ring-1 ring-black h-8" src="{{asset('/user.jpg')}}" alt="" height="50">
+        </a>
+        
         <h6 class="bg-red-500 p-1 text-white rounded-3xl">Add Question</h6>
     </div>
 

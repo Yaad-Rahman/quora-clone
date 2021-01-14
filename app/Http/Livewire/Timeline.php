@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Post;
+use App\Like;
 
 class Timeline extends Component
 {
@@ -12,6 +13,7 @@ class Timeline extends Component
 
     public $postQuestion;
     public $postPhoto;
+    public $comment;
 
     protected $rules = [
         'postQuestion' => 'required|max:255',
@@ -21,6 +23,16 @@ class Timeline extends Component
     public function updated()
     {
         $this->validate();
+    }
+
+    public function showComment($id)
+    {
+        if($this->comment){
+            $this->comment = null;    
+        }else{
+            $this->comment= $id;
+        }
+        
     }
 
     public function post()
@@ -39,12 +51,68 @@ class Timeline extends Component
         $this->postPhoto = '';
     }
 
+    public function postLike(Post $post)
+    {
+        $my_like = $post->likes->where('user_id', auth()->user()->id)->first();
+        $my_dislike = $post->dislikes->where('user_id', auth()->user()->id)->first();
+
+        if($my_dislike)
+        {
+            $my_dislike->delete();
+            $like = new Like;
+            $like->liked = true;
+            $like->user_id = auth()->user()->id;
+            $post->likes()->save($like);
+            $this->postLiked = true;
+        }
+        else{
+            if($my_like)
+            {
+                $my_like->delete();
+            }
+            else{
+                $like = new Like;
+                $like->liked = true;
+                $like->user_id = auth()->user()->id;
+                $post->likes()->save($like);
+                $this->postLiked = true;
+            }
+        }
+
+    }
+
+    public function postDislike(Post $post)
+    {
+        $my_like = $post->likes->where('user_id', auth()->user()->id)->first();
+        $my_dislike = $post->dislikes->where('user_id', auth()->user()->id)->first();
+
+        if($my_like)
+        {
+            $my_like->delete();
+            $dislike = new Like;
+            $dislike->liked = false;
+            $dislike->user_id = auth()->user()->id;
+            $post->likes()->save($dislike);
+        }
+        else{
+            if($my_dislike)
+            {
+                $my_dislike->delete();
+            }
+            else{
+                $dislike = new Like;
+                $dislike->liked = false;
+                $dislike->user_id = auth()->user()->id;
+                $post->likes()->save($dislike);
+            }
+        }
+
+    }
+
     public function render()
     {
-        $posts = Post::all();
-
         return view('livewire.timeline', [
-            'posts' => $posts,
+            'posts' => auth()->user()->timeline(),
         ]);
     }
 
