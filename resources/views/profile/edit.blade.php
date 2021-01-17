@@ -2,6 +2,6 @@
 
 @section('content')
 
-@livewire('profile')
-    
+@livewire('profile-edit')
+
 @endsection

@@ -17,7 +17,7 @@
         <h6>Answer</h6>
         <h6>Notifications</h6>
         @livewire('search')
-        <a href="{{route('profile', auth()->user()->id)}}">
+        <a href="{{route('profile', auth()->user()->name)}}">
             <img class="rounded-3xl w-8 ring-1 ring-black h-8" src="{{asset('/user.jpg')}}" alt="" height="50">
         </a>
         

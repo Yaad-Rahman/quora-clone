@@ -58,12 +58,8 @@ class Timeline extends Component
 
         if($my_dislike)
         {
-            $my_dislike->delete();
-            $like = new Like;
-            $like->liked = true;
-            $like->user_id = auth()->user()->id;
-            $post->likes()->save($like);
-            $this->postLiked = true;
+            $my_dislike->liked = true;
+            $my_dislike->save();
         }
         else{
             if($my_like)
@@ -88,11 +84,8 @@ class Timeline extends Component
 
         if($my_like)
         {
-            $my_like->delete();
-            $dislike = new Like;
-            $dislike->liked = false;
-            $dislike->user_id = auth()->user()->id;
-            $post->likes()->save($dislike);
+            $my_like->liked = false;
+            $my_like->save();
         }
         else{
             if($my_dislike)
