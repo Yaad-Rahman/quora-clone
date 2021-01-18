@@ -9,6 +9,19 @@
             <div class="flex">
                 <h5 class="font-medium">{{$comment->author->name}}</h5>
                 <h5 class="ml-5 text-xs text-gray-500 pt-1">{{$comment->created_at->format('d F Y')}}</h5>
+                @if(auth()->user()->id == $comment->post->author->id)
+                    @if($comment->best_answer)
+                    <button wire:click="bestAnswer({{$comment->id}})" class="ml-3 bg-red-100 text-red-600 rounded-full shadow py-2 px-2 text-xs">Unmark as Best</button>
+                    @else
+                    @if($show) 
+                    <button wire:click="bestAnswer({{$comment->id}})" class="ml-3 bg-green-100 text-green-600 rounded-full shadow py-2 px-2 text-xs">Mark as Best</button>
+                    @endif
+                    @endif
+                    
+                @endif
+                @if($comment->best_answer)
+                <p class="ml-3 bg-green-100 text-green-600 rounded-full shadow py-2 px-2 text-xs">Best Answer</p>
+                @endif
             </div>
             
             <p>{{$comment->comment}} </p>

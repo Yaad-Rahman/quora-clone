@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
@@ -16,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password','bio', 'avatar', 'cover'
     ];
 
     /**
@@ -66,9 +67,16 @@ class User extends Authenticatable
         return $this->follows()->where('following_user_id', $user->id)->exists();
     }
 
-    public function unfollow (User $user){
+    public function unfollow (User $user)
+    {
         return $this->follows()->detach($user);
     }
+
+    public function followers(User $user)
+    {
+        return DB::table('follows')->where('following_user_id', $user->id)->count();
+    }
+
 
     public function timeline()
     {
@@ -77,5 +85,23 @@ class User extends Authenticatable
         else $friends = [];
 
         return Post::where('user_id', $this->id)->orWhereIn('user_id', $friends)->latest()->get();
+    }
+
+    public function getAvatarAttribute($value)
+    {
+        if($value){
+            return asset('storage/' .$value);
+        }else{
+            return asset('/default-user.png');
+        }
+    }
+
+    public function getCoverAttribute($value)
+    {
+        if($value){
+            return asset('storage/' .$value);
+        }else{
+            return asset('/cancer.jpg');
+        }
     }
 }

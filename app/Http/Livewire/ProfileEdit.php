@@ -4,37 +4,46 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use App\User;
+use App\Rules\PasswordCheck;
 
 class ProfileEdit extends Component
 {
 
     use WithFileUploads;
-    public $name;
+    
+    public $userName;
     public $email;
+    public $oldPassword;
     public $password;
     public $password_confirmation;
     public $bio;
-    public $proPic;
+    public $avatar;
     public $cover;
+    public $user;
 
     public function mount() 
     {
-       $this->name = auth()->user()->name;
+       $this->userName = auth()->user()->name;
        $this->email = auth()->user()->email;
        $this->bio = auth()->user()->bio ? auth()->user()->bio : 'no bio';
-       $this->proPic = auth()->user()->proPic;
+       $this->avatar = auth()->user()->avatar;
        $this->cover = auth()->user()->cover;
     }
 
 
-    protected $rules = [
-        'name' => 'min:3',
+    public function rules()
+    {
+    return [
+        'userName' => 'min:3',
         'email' => 'email',
-        'password' => 'required|confirmed',
-        'bio' => 'max:50',
-        'proPic' => 'image|max:1200',
+        'oldPassword' => ['required', new PasswordCheck($this->email) ],
+        'password' => 'confirmed',
+        'bio' => 'max:250',
+        'avatar' => 'image|max:1200',
         'cover' => 'image|max:2048',
     ];
+    }
 
     public function updated($property)
     {
@@ -43,13 +52,38 @@ class ProfileEdit extends Component
 
     public function editProfile()
     {
-        dd($this->validate());
+        $data = $this->validate();
+        if($data['password']){
+            $data['password'] = bcrypt($data['password']);
+        }else{
+            $data['password'] = auth()->user()->password;
+        }
+            
+        if($data['avatar'])
+            $data['avatar']= $data['avatar']->store('Profile Pics');
+        if($data['cover'])
+            $data['cover']= $data['cover']->store('Covers');
+       
+
+        $user = User::findOrFail(auth()->user()->id);
+        $user->update([
+            'name' => $data['userName'],
+            'email' => $data['email'],
+            'password' => $data['password'],
+            'bio' => $data['bio'],
+            'avatar' => $data['avatar'],
+            'cover' => $data['cover'],
+        ]);
+
+        return redirect(route('profile', auth()->user()->name));
+        
+        
+
+
     }
 
     public function render()
     {
-
-
         return view('livewire.profile-edit');
     }
 }

@@ -23,7 +23,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/home', 'HomeController@index')->name('home');
 
     Route::get('/profile/{user:name}', 'ProfileController@show')->name('profile');
-    Route::view('/profile/{user:name}/edit', 'profile.edit')->name('profile.edit');
+    Route::get('/profile/{user:name}/edit', 'ProfileController@edit')->name('profile.edit');
     Route::post('/profiles/{user:name}/follow', 'FollowsController@store')->name('follow');
 });
 

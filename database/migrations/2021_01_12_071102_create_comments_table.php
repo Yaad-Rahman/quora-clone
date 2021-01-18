@@ -19,6 +19,7 @@ class CreateCommentsTable extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->text('comment');
             $table->integer('parent_id')->default(0);
+            $table->boolean('best_answer')->default(false);
             $table->timestamps();
         });
     }

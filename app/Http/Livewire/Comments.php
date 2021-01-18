@@ -12,11 +12,28 @@ class Comments extends Component
     public $comment;
     public $postId;
     public $reply;
+    public $show = true;
 
     protected $rules = [
         'comment' => 'required|max:255',
     ];
 
+
+    public function bestAnswer($commentId)
+    {
+        $comment = Comment::findOrFail($commentId);
+
+        if($comment->best_answer){
+            $comment->update([
+                'best_answer' => false
+            ]);
+        }else{
+            $comment->update([
+                'best_answer' => true
+            ]);
+        }
+        $this->emit('answerSelected');    
+    }
 
     public function commentReply($id)
     {
@@ -107,6 +124,12 @@ class Comments extends Component
     public function render()
     {
         $comments = Comment::where('post_id', $this->postId)->where('parent_id', 0)->get();
+
+        $check = Comment::where('post_id', $this->postId)->where('best_answer', true)->count();
+
+        if($check)
+            $this->show = false;
+            $refresh;
         
         return view('livewire.comments', [
             'comments' => $comments,

@@ -51,4 +51,9 @@ class Post extends Model
             return null;
         }
     }
+
+    public function bestAnswer()
+    {
+        return $this->comments->where('best_answer', true)->first();
+    }
 }

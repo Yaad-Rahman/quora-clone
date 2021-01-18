@@ -13,6 +13,7 @@ class Comment extends Model
        'post_id',
        'comment',
        'parent_id',
+       'best_answer'
    ];
 
    public function post()

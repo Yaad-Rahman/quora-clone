@@ -14,6 +14,11 @@ class Timeline extends Component
     public $postQuestion;
     public $postPhoto;
     public $comment;
+    public $best_answer;
+
+    protected $listeners = [
+        'answerSelected' => '$refresh'
+    ];
 
     protected $rules = [
         'postQuestion' => 'required|max:255',
