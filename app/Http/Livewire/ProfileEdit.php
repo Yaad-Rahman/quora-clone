@@ -27,21 +27,18 @@ class ProfileEdit extends Component
        $this->userName = auth()->user()->name;
        $this->email = auth()->user()->email;
        $this->bio = auth()->user()->bio ? auth()->user()->bio : 'no bio';
-       $this->avatar = auth()->user()->avatar;
-       $this->cover = auth()->user()->cover;
     }
 
 
     public function rules()
     {
     return [
-        'userName' => 'min:3',
         'email' => 'email',
         'oldPassword' => ['required', new PasswordCheck($this->email) ],
         'password' => 'confirmed',
         'bio' => 'max:250',
-        'avatar' => 'image|max:1200',
-        'cover' => 'image|max:2048',
+        'avatar' => 'nullable|image|max:1200',
+        'cover' => 'nullable|image|max:2048',
     ];
     }
 
@@ -67,7 +64,6 @@ class ProfileEdit extends Component
 
         $user = User::findOrFail(auth()->user()->id);
         $user->update([
-            'name' => $data['userName'],
             'email' => $data['email'],
             'password' => $data['password'],
             'bio' => $data['bio'],

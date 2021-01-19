@@ -30,6 +30,11 @@ class Timeline extends Component
         $this->validate();
     }
 
+    public function deletePost($id)
+    {
+        Post::destroy($id);
+    }
+
     public function showComment($id)
     {
         if($this->comment){

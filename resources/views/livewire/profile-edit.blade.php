@@ -6,6 +6,7 @@
             class="ml-2 border rounded-3xl {{$errors->has('userName') ? 'ring-1 ring-red-500' : null}} p-3 focus:outline-none focus:ring-1" 
             type="text"
             wire:model="userName"
+            disabled
             >
             @error('userName')
                 <span class="text-center mt-2 text-sm text-red-500">{{$message}}</span>
@@ -75,11 +76,9 @@
         <div class="mt-5 flex">
             <div>
                 @if($avatar)
-                    @if(is_string($avatar))
-                        <img class="rounded-3xl w-20 h-20 mr-5" src="{{ $avatar}}" alt="pp">
-                    @else
-                    <img class="rounded-3xl w-20 h-20 mr-5" src="{{ $avatar->temporaryUrl() }}" alt="pp">
-                    @endif
+                    <img class="w-20 h-20 mr-5" src="{{ $avatar->temporaryUrl() }}" alt="pp">
+                @else
+                    <img class="w-20 h-20 mr-5" src="{{auth()->user()->avatar}}" alt="pp">     
                 @endif
             </div>
             <div class="flex flex-col">
@@ -99,11 +98,9 @@
         <div class="mt-5 flex">
             <div>
                 @if($cover)
-                    @if(is_string($cover))
-                        <img class="w-20 h-20 mr-5" src="{{$cover}}" alt="pp">
-                    @else 
-                        <img class="w-20 h-20 mr-5" src="{{ $cover->temporaryUrl() }}" alt="pp">
-                    @endif
+                    <img class="w-20 h-20 mr-5" src="{{ $cover->temporaryUrl() }}" alt="pp">
+                @else
+                    <img class="w-20 h-20 mr-5" src="{{auth()->user()->cover}}" alt="pp">     
                 @endif
             </div>
             <div class="flex flex-col">

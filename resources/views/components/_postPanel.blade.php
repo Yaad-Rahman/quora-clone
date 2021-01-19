@@ -1,10 +1,10 @@
-<div class="border shadow p-2 ">
+<div class="border shadow p-5 ">
     <div class="flex mb-2">
-        <img src="{{asset('/user.jpg')}}" alt="" height="20" width="20">
-        <p class="text-xs">{{auth()->user()->name}}</p>
+        <img class="rounded-lg h-8" src="{{auth()->user()->avatar}}" alt="avatar" width="30">
+        <p class="ml-3 font-medium">{{auth()->user()->name}}</p>
     </div>
     <form wire:submit.prevent="post">
-        <textarea wire:model.debounce.2s="postQuestion" cols="50" rows="4" placeholder="   Got any question ?"></textarea>
+        <textarea class="w-full border rounded-3xl p-3 focus:outline-none focus:ring-1" wire:model.debounce.2s="postQuestion" rows="4" placeholder="   Got any question ?"></textarea>
         <footer class="flex mt-2">
             <div>
                 <label for="file-input">

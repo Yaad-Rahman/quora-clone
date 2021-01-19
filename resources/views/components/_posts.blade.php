@@ -1,9 +1,14 @@
 @foreach($posts as $post)
     <div class="border shadow mt-5 p-5">
     <div class="flex">
-        <img class="rounded-3xl h-11 mr-2" src="{{asset('/user.jpg')}}" width="45" alt="avatar">
+        <img class="rounded-3xl h-11 mr-2" src="{{$post->author->avatar}}" width="45" alt="avatar">
         <h5 class="font-medium">{{$post->author->name}}</h5>
         <h5 class="ml-5 text-xs text-gray-500 pt-1">{{$post->created_at->format('d F Y')}}</h5>
+        @if(auth()->user()->is($post->author))
+        
+        @include('components._deleteModal')
+        
+        @endif
     </div>
     <div class="mt-2">
         <h5 class="text-lg font-bold">{{$post->question}}</h5>

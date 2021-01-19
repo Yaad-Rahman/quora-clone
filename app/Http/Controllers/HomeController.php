@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\User;
 
 class HomeController extends Controller
 {
@@ -23,6 +24,13 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('homepage');
+
+        $follows = auth()->user()->follows;
+        $randomUsers = User::where('id', '<>', auth()->user()->id)->get();
+
+        return view('homepage',[
+            'follows' => $follows,
+            'randomUsers' => $randomUsers
+        ]);
     }
 }
