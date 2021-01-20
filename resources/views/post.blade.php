@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
 @section('content')
-    <div>hello bello gaab minions</div>
+    @livewire('single-post', ['postId' => $postId], key($postId))
+
+
 @endsection
