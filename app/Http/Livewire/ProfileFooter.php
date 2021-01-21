@@ -27,7 +27,7 @@ class ProfileFooter extends Component
 
     public function render()
     {
-        $posts = Post::where('user_id', $this->user->id)->get();
+        $posts = Post::with('author', 'comments', 'likes', 'dislikes')->where('user_id', $this->user->id)->get();
 
         return view('livewire.profile-footer', [
             'posts' => $posts

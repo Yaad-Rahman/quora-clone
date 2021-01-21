@@ -4,7 +4,7 @@
         <p class="ml-3 font-medium">{{auth()->user()->name}}</p>
     </div>
     <form wire:submit.prevent="post">
-        <textarea class="w-full border rounded-3xl p-3 focus:outline-none focus:ring-1" wire:model.debounce.2s="postQuestion" rows="4" placeholder="   Got any question ?"></textarea>
+        <textarea style="resize: none" class="w-full border rounded-3xl p-3 focus:outline-none focus:ring-1" wire:model.debounce.2s="postQuestion" rows="4" placeholder="   Got any question ?"></textarea>
         <footer class="flex mt-2">
             <div>
                 <label for="file-input">

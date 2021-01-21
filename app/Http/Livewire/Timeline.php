@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Post;
 use App\Like;
+use App\Activity;
 
 class Timeline extends Component
 {
@@ -32,7 +33,9 @@ class Timeline extends Component
 
     public function deletePost($id)
     {
-        Post::destroy($id);
+        $post = Post::findOrFail($id);
+        $post->activities()->delete();
+        $post->delete();
     }
 
     public function showComment($id)
@@ -50,12 +53,17 @@ class Timeline extends Component
         $data = $this->validate();
         if($data['postPhoto'])
             $data['postPhoto'] = $data['postPhoto']->store('posts');
-
-        Post::create([
+        
+        $post = Post::create([
             'user_id' => auth()->user()->id,
             'question' => $data['postQuestion'],
             'post_photo' => $data['postPhoto'],
         ]);
+
+            $activity = new Activity;
+            $activity->user_id = auth()->user()->id;
+            $activity->name = "Post created";
+            $post->activities()->save($activity);
 
         $this->postQuestion = '';
         $this->postPhoto = '';
@@ -82,6 +90,11 @@ class Timeline extends Component
                 $like->user_id = auth()->user()->id;
                 $post->likes()->save($like);
                 $this->postLiked = true;
+
+                $activity = new Activity;
+                $activity->user_id = auth()->user()->id;
+                $activity->name = "Liked post";
+                $post->activities()->save($activity);
             }
         }
 
@@ -107,6 +120,11 @@ class Timeline extends Component
                 $dislike->liked = false;
                 $dislike->user_id = auth()->user()->id;
                 $post->likes()->save($dislike);
+
+                $activity = new Activity;
+                $activity->user_id = auth()->user()->id;
+                $activity->name = "Disliked Post";
+                $post->activities()->save($activity);
             }
         }
 

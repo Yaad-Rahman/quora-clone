@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\Comment;
 use App\Like;
+use App\Activity;
 
 class Reply extends Component
 {
@@ -28,21 +29,9 @@ class Reply extends Component
 
     public function deleteReply($id)
     {
-        Comment::destroy($id);
-    }
-
-    public function postReplyOfReply()
-    {
-        $data = $this->validate([
-            'replyOfReply' => 'required|max:255'
-        ]);
-        Comment::create([
-            'post_id' => $this->postId,
-            'user_id' => auth()->user()->id,
-            'parent_id' => $this->commentId, 
-            'comment' => $data['replyOfReply']
-        ]);
-        $this->replyOfReply = '';
+        $reply = Comment::findOrFail($id);
+        $reply->activities()->delete();
+        $reply->delete();
     }
 
     public function postReply()
@@ -50,12 +39,18 @@ class Reply extends Component
         $data= $this->validate([
             'reply' => 'required|max:255'
         ]);
-        Comment::create([
+        $comment = Comment::create([
             'post_id' => $this->postId,
             'user_id' => auth()->user()->id,
             'parent_id' => $this->commentId, 
             'comment' => $data['reply']
         ]);
+
+        $activity = new Activity;
+        $activity->user_id = auth()->user()->id;
+        $activity->name = "Replied on comment";
+        $comment->activities()->save($activity);
+
         $this->reply = '';
     }
 

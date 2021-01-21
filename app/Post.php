@@ -56,4 +56,9 @@ class Post extends Model
     {
         return $this->comments->where('best_answer', true)->first();
     }
+
+    public function activities()
+    {
+       return $this->morphMany(Activity::class, 'activitable');
+    }
 }

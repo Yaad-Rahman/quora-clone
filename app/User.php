@@ -5,11 +5,13 @@ namespace App;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\DB;
+
+use App\Http\Traits\FollowTrait;
 
 class User extends Authenticatable
 {
     use Notifiable;
+    use FollowTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -53,38 +55,13 @@ class User extends Authenticatable
         return $this->hasMany(Like::class);
     }
 
-    public function follow (User $user){
-        return $this->follows()->save($user);
-    }
-
-    public function follows()
-    {
-        return $this->belongsToMany(User::class, 'follows', 'user_id', 'following_user_id');
-    }
-
-    public function following(User $user)
-    {
-        return $this->follows()->where('following_user_id', $user->id)->exists();
-    }
-
-    public function unfollow (User $user)
-    {
-        return $this->follows()->detach($user);
-    }
-
-    public function followers(User $user)
-    {
-        return DB::table('follows')->where('following_user_id', $user->id)->count();
-    }
-
-
     public function timeline()
     {
         if($this->follows())
             $friends = $this->follows()->pluck('id');
         else $friends = [];
 
-        return Post::where('user_id', $this->id)->orWhereIn('user_id', $friends)->latest()->get();
+        return Post::with('likes', 'dislikes', 'comments', 'author')->where('user_id', $this->id)->orWhereIn('user_id', $friends)->latest()->get();
     }
 
     public function getAvatarAttribute($value)
@@ -103,5 +80,10 @@ class User extends Authenticatable
         }else{
             return asset('/cancer.jpg');
         }
+    }
+
+    public function activities()
+    {
+        $this->hasMany(Activity::class);
     }
 }

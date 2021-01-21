@@ -10,15 +10,18 @@
         
         @endif
     </div>
-    <div class="mt-2">
-        <h5 class="text-lg font-bold">{{$post->question}}</h5>
-        @if($post->bestAnswer())
-            <p class="font-light text-sm">{{$post->bestAnswer()->comment}}</p>
-        @endif
-        @if($post->post_photo)
-        <img class="mt-5" src="{{$post->post_photo}}" alt="post_img" width="500">
-        @endif
-    </div>
+    <a href="{{route('post', $post->id)}}">
+        <div class="mt-2">
+            <h5 class="text-lg font-bold">{{$post->question}}</h5>
+            @if($post->bestAnswer())
+                <p class="font-light text-sm">{{$post->bestAnswer()->comment}}</p>
+            @endif
+            @if($post->post_photo)
+            <img class="mt-5" src="{{$post->post_photo}}" alt="post_img" width="500">
+            @endif
+        </div>
+    </a>
+    
     <footer class="mt-2">
         <div class="flex ">
             <div class="flex mr-10 bg-gray-200 p-1 rounded">

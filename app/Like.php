@@ -17,4 +17,5 @@ class Like extends Model
    {
        return $this->morphTo();
    }
+
 }

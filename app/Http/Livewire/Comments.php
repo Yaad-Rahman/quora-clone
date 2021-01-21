@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\Comment;
 use App\Like;
+use App\Activity;
 use Illuminate\Database\Eloquent\Builder;
 
 class Comments extends Component
@@ -47,18 +48,26 @@ class Comments extends Component
     public function deleteComment($id)
     {
         Comment::where('parent_id', $id)->delete();
-        Comment::destroy($id);
+        $comment = Comment::findOrFail($id);
+        $comment->activities()->delete();
+        $comment->delete();
     }
 
 
     public function postComment()
     {
         $data = $this->validate();
-        Comment::create([
+        $comment = Comment::create([
             'post_id' => $this->postId,
             'user_id' => auth()->user()->id,
             'comment' => $data['comment']
         ]);
+
+        $activity = new Activity;
+        $activity->user_id = auth()->user()->id;
+        $activity->name = "Commented on post";
+        $comment->post->activities()->save($activity);
+
         $this->comment = '';
     }
 
@@ -123,7 +132,7 @@ class Comments extends Component
 
     public function render()
     {
-        $comments = Comment::where('post_id', $this->postId)->where('parent_id', 0)->get();
+        $comments = Comment::with('author', 'likes', 'dislikes', 'post')->where('post_id', $this->postId)->where('parent_id', 0)->get();
 
         $check = Comment::where('post_id', $this->postId)->where('best_answer', true)->count();
 

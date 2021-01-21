@@ -9,8 +9,9 @@
          <img class="absolute -bottom-10 ring-2 left-10" src="{{$user->avatar}}" alt="avatar" height="100" width="100">
         </div>
         <div class="px-10">
-         <h3 class="font-bold text-2xl">{{$user->name}}</h3>
-         <p class="font-thin">{{$user->bio}}</p>
+            <h3 class="font-bold text-2xl">{{$user->name}}</h3>
+            <p class="text-xs font-thin">Member since {{$user->created_at->format('d F Y')}}</p>
+            <p class="font-light mt-5">{{$user->bio}}</p>
         
         <div class="flex">
             @if (auth()->user()->is($user))
@@ -24,6 +25,7 @@
             @endif
             @if(auth()->user()->is($user))
             <a href="{{route('profile.edit', $user)}}" class="mt-5 bg-gray-500 ml-3 rounded-full shadow py-2 px-2 text-white text-xs">Edit Profile</a>
+            <a href="{{route('activity', $user->id)}}" class="border mt-5 bg-white ml-3 rounded-full shadow py-2 px-2 text-gray-600 text-xs"><i class="fa fa-superpowers" aria-hidden="true"></i>Activity Log</a>
             @endif
         </div>
         </div> 
