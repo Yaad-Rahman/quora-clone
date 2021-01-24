@@ -9,7 +9,7 @@ class ActivityController extends Controller
 {
     public function index($id)
     {
-        $activities = Activity::with('activitable')->where('user_id', $id)->get();
+        $activities = Activity::with('activitable')->where('user_id', $id)->latest()->paginate(15);
 
         // return $activities;
 

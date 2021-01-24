@@ -6,26 +6,19 @@ use Livewire\Component;
 use App\Comment;
 use App\Like;
 use App\Activity;
+use Illuminate\Notifications\Notifiable;
+use App\Notifications\CommentReplyNotification;
 
 class Reply extends Component
 {
+
+    use Notifiable;
 
     public $reply;
     public $postId;
     public $commentId;
     public $replyAvailable;
 
-    
-
-    public function replyOfReply($id)
-    {
-        if($this->replyAvailable)
-        {
-            $this->replyAvailable = null;
-        }else {
-            $this->replyAvailable = $id;
-        }
-    }
 
     public function deleteReply($id)
     {
@@ -39,17 +32,23 @@ class Reply extends Component
         $data= $this->validate([
             'reply' => 'required|max:255'
         ]);
-        $comment = Comment::create([
+        Comment::create([
             'post_id' => $this->postId,
             'user_id' => auth()->user()->id,
             'parent_id' => $this->commentId, 
             'comment' => $data['reply']
         ]);
 
+        $parentComment = Comment::findOrFail($this->commentId);
+
+        if(auth()->user()->id !== $parentComment->user_id){
+            $parentComment->author->notify(new CommentReplyNotification($this->postId, $parentComment->comment));
+        }
+        
         $activity = new Activity;
         $activity->user_id = auth()->user()->id;
         $activity->name = "Replied on comment";
-        $comment->activities()->save($activity);
+        $parentComment->activities()->save($activity);
 
         $this->reply = '';
     }
@@ -117,7 +116,7 @@ class Reply extends Component
 
     public function render()
     {   
-        $replies = Comment::where('post_id', $this->postId)->where('parent_id', $this->commentId)->get();
+        $replies = Comment::with('author', 'post', 'likes', 'dislikes')->where('post_id', $this->postId)->where('parent_id', $this->commentId)->get();
 
         return view('livewire.reply', [
             'replies' => $replies,

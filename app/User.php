@@ -84,6 +84,11 @@ class User extends Authenticatable
 
     public function activities()
     {
-        $this->hasMany(Activity::class);
+        return $this->hasMany(Activity::class);
+    }
+
+    public function followActivity()
+    {
+        return $this->morphMany(Activity::class, 'activitable', 'activitable_type', 'activitable_id');
     }
 }

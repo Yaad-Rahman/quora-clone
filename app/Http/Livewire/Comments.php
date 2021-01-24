@@ -6,10 +6,14 @@ use Livewire\Component;
 use App\Comment;
 use App\Like;
 use App\Activity;
+use Illuminate\Notifications\Notifiable;
+use App\Notifications\PostCommentNotification;
 use Illuminate\Database\Eloquent\Builder;
 
 class Comments extends Component
 {
+    use Notifiable;
+
     public $comment;
     public $postId;
     public $reply;
@@ -62,6 +66,12 @@ class Comments extends Component
             'user_id' => auth()->user()->id,
             'comment' => $data['comment']
         ]);
+
+        if(auth()->user()->id !== $comment->post->author->id)
+        $comment->post->author->notify(new PostCommentNotification(auth()->user()->name,
+        $comment->post->question, $this->postId));
+     
+        
 
         $activity = new Activity;
         $activity->user_id = auth()->user()->id;
