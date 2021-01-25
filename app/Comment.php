@@ -13,6 +13,7 @@ class Comment extends Model
        'post_id',
        'comment',
        'parent_id',
+       'reply_count',
        'best_answer'
    ];
 
@@ -41,20 +42,15 @@ class Comment extends Model
         return (bool) $this->dislikes->where('user_id', auth()->user()->id)->count();
     }
 
-    public function replies($id)
+    public function author()
     {
-        return $this->where('parent_id', $id)->count();
+       return $this->belongsTo(User::class, 'user_id');
     }
 
-   public function author()
-   {
-       return $this->belongsTo(User::class, 'user_id');
-   }
-
-   public function activities()
-   {
+    public function activities()
+    {
        return $this->morphMany(Activity::class, 'activitable');
-   }
+    }
 
 
 }

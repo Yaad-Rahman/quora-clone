@@ -24,7 +24,12 @@ class Reply extends Component
     {
         $reply = Comment::findOrFail($id);
         $reply->activities()->delete();
+        $parentComment = Comment::findOrFail($this->commentId);
+        $parentComment->update([
+            'reply_count' => $parentComment->reply_count - 1,
+        ]);
         $reply->delete();
+        $this->emit('reply');
     }
 
     public function postReply()
@@ -41,6 +46,10 @@ class Reply extends Component
 
         $parentComment = Comment::findOrFail($this->commentId);
 
+        $parentComment->update([
+            'reply_count' => $parentComment->reply_count + 1,
+        ]);
+
         if(auth()->user()->id !== $parentComment->user_id){
             $parentComment->author->notify(new CommentReplyNotification($this->postId, $parentComment->comment));
         }
@@ -51,6 +60,7 @@ class Reply extends Component
         $parentComment->activities()->save($activity);
 
         $this->reply = '';
+        $this->emit('reply');
     }
 
     public function replyLike(Comment $comment)

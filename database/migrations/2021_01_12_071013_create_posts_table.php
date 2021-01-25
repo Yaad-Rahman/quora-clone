@@ -18,6 +18,8 @@ class CreatePostsTable extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->text('question');
             $table->string('post_photo')->nullable();
+            $table->integer('comments_count')->default(0);
+            $table->text('best_answer')->nullable();
             $table->timestamps();
         });
     }

@@ -20,6 +20,7 @@ class CreateCommentsTable extends Migration
             $table->text('comment');
             $table->integer('parent_id')->default(0);
             $table->boolean('best_answer')->default(false);
+            $table->integer('reply_count')->default(0);
             $table->timestamps();
         });
     }

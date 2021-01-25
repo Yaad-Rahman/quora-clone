@@ -23,6 +23,10 @@ class Comments extends Component
         'comment' => 'required|max:255',
     ];
 
+    protected $listeners = [
+        'reply' => '$refresh',
+    ];
+
 
     public function bestAnswer($commentId)
     {
@@ -32,9 +36,16 @@ class Comments extends Component
             $comment->update([
                 'best_answer' => false
             ]);
+            $comment->post->update([
+                'best_answer' => null
+            ]);
+
         }else{
             $comment->update([
                 'best_answer' => true
+            ]);
+            $comment->post->update([
+                'best_answer' => $comment->comment
             ]);
         }
         $this->emit('answerSelected');    
@@ -54,7 +65,11 @@ class Comments extends Component
         Comment::where('parent_id', $id)->delete();
         $comment = Comment::findOrFail($id);
         $comment->activities()->delete();
+        $comment->post->update([
+            'comments_count' => $comment->post->comments_count - 1,
+        ]);
         $comment->delete();
+        $this->emit('answerSelected');
     }
 
 
@@ -65,6 +80,10 @@ class Comments extends Component
             'post_id' => $this->postId,
             'user_id' => auth()->user()->id,
             'comment' => $data['comment']
+        ]);
+
+        $comment->post->update([
+            'comments_count' => $comment->post->comments_count + 1,
         ]);
 
         if(auth()->user()->id !== $comment->post->author->id)
@@ -79,6 +98,7 @@ class Comments extends Component
         $comment->post->activities()->save($activity);
 
         $this->comment = '';
+        $this->emit('answerSelected');
     }
 
     public function commentLike(Comment $comment)
@@ -148,7 +168,7 @@ class Comments extends Component
 
         if($check)
             $this->show = false;
-            $refresh;
+        else $this->show = true;
         
         return view('livewire.comments', [
             'comments' => $comments,

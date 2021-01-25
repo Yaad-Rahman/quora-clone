@@ -9,7 +9,9 @@ class Post extends Model
     protected $fillable = [
         'user_id',
         'question',
-        'post_photo'
+        'post_photo',
+        'comments_count',
+        'best_answer'
     ];
     
     public function author()
@@ -50,11 +52,6 @@ class Post extends Model
         else {
             return null;
         }
-    }
-
-    public function bestAnswer()
-    {
-        return $this->comments->where('best_answer', true)->first();
     }
 
     public function activities()
